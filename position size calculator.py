@@ -1,3 +1,33 @@
+import sqlite3
+
+
+def initialize_db():
+    # connects to database
+    conn = sqlite3.connect('accounts.db')
+    c = conn.cursor()
+
+    # create table
+    c.execute("""CREATE TABLE IF NOT EXISTS accounts(
+            account_name text,
+            account_balance real,
+            risk_percentage real
+    )
+    """)
+
+    conn.commit()
+    conn.close()
+
+    print("Database initialized")
+
+def create_accounts(account_name, account_balance, risk_percentage):
+    conn = sqlite3.connect('accounts.db')
+    c = conn.cursor()
+    c.execute("INSERT INTO accounts VALUES (?,?,?)", (account_name, account_balance, risk_percentage))
+    conn.commit()
+    conn.close()
+
+    print(f"{account_name} created successfully")
+
 def calculate_lot_size (balance, risk_percent, stop_loss):
     risk_amount = balance * (risk_percent/100)
     pip_value = risk_amount / stop_loss
@@ -18,25 +48,25 @@ def get_number_input(user_input):
         except ValueError:
             print("Invalid input! please enter a number!")
 
-def main():
-    print('POSITION SIZE CALCULATOR')
-
-    while True:
-        #get user input
-        account_balance = get_number_input("\nAccount balance($): ")
-        risk_percent = get_number_input("Risk percent(%): ")
-        stop_loss = get_number_input("Stop loss(pips): ")
-
-        #calculate lots size
-        result = calculate_lot_size(account_balance, risk_percent, stop_loss)
-
-        #display result
-        print(f"Risk: ${result['risk_amount']}\nMini lot: {result['mini_lots']}")
-
-        #ask if user wants to calculate again
-        repeat = input("\nWant to calculate again? (y/n) ").lower()
-        if repeat != "y":
-            break
-
-if __name__ == '__main__':
-    main()
+# def main():
+#     print('POSITION SIZE CALCULATOR')
+#
+#     while True:
+#         #get user input
+#         account_balance = get_number_input("\nAccount balance($): ")
+#         risk_percent = get_number_input("Risk percent(%): ")
+#         stop_loss = get_number_input("Stop loss(pips): ")
+#
+#         #calculate lots size
+#         result = calculate_lot_size(account_balance, risk_percent, stop_loss)
+#
+#         #display result
+#         print(f"Risk: ${result['risk_amount']}\nMini lot: {result['mini_lots']}")
+#
+#         #ask if user wants to calculate again
+#         repeat = input("\nWant to calculate again? (y/n) ").lower()
+#         if repeat != "y":
+#             break
+#
+# if __name__ == '__main__':
+#     main()
