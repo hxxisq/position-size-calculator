@@ -20,6 +20,7 @@ def initialize_db():
     print("Database initialized")
 
 def create_accounts(account_name, account_balance, risk_percentage):
+    """add a new account preset to the database"""
     conn = sqlite3.connect('accounts.db')
     c = conn.cursor()
     c.execute("INSERT INTO accounts VALUES (?,?,?)", (account_name, account_balance, risk_percentage))
@@ -27,6 +28,40 @@ def create_accounts(account_name, account_balance, risk_percentage):
     conn.close()
 
     print(f"{account_name} created successfully")
+
+def get_all_accounts():
+    conn = sqlite3.connect('accounts.db')
+    c = conn.cursor()
+    c.execute("SELECT rowid, account_name, account_balance, risk_percentage FROM accounts")
+    accounts = c.fetchall()
+
+    conn.close()
+
+    return accounts
+
+def display_all_accounts():
+    """show all saved accounts"""
+    accounts = get_all_accounts()
+
+    if not accounts:
+        print("No accounts saved")
+        return
+
+    for item in accounts:
+        rowid = item[0]
+        name = item[1]
+        account_balance = item[2]
+        risk_percentage = item[3]
+        print(f"{rowid} || Name: {name} || Balance: {account_balance:,.2f} || Risk Percentage: {risk_percentage}%")
+
+def delete_accounts(rowid):
+    conn = sqlite3.connect('accounts.db')
+    c = conn.cursor()
+
+    c.execute("DELETE FROM accounts WHERE rowid = (?)", (rowid,))
+
+    conn.commit()
+    conn.close()
 
 def calculate_lot_size (balance, risk_percent, stop_loss):
     risk_amount = balance * (risk_percent/100)
@@ -70,3 +105,9 @@ def get_number_input(user_input):
 #
 # if __name__ == '__main__':
 #     main()
+
+def main():
+    initialize_db()
+
+if __name__ == "__main__":
+    main()
