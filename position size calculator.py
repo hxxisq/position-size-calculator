@@ -19,7 +19,7 @@ def initialize_db():
 
     print("Database initialized")
 
-def create_accounts(account_name, account_balance, risk_percentage):
+def create_preset(account_name, account_balance, risk_percentage):
     """add a new account preset to the database"""
     conn = sqlite3.connect('accounts.db')
     c = conn.cursor()
@@ -29,32 +29,32 @@ def create_accounts(account_name, account_balance, risk_percentage):
 
     print(f"{account_name} created successfully")
 
-def get_all_accounts():
+def get_all_presets():
     conn = sqlite3.connect('accounts.db')
     c = conn.cursor()
     c.execute("SELECT rowid, account_name, account_balance, risk_percentage FROM accounts")
-    accounts = c.fetchall()
+    presets = c.fetchall()
 
     conn.close()
 
-    return accounts
+    return presets
 
-def display_all_accounts():
+def display_all_presets():
     """show all saved accounts"""
-    accounts = get_all_accounts()
+    presets = get_all_presets()
 
-    if not accounts:
-        print("No accounts saved")
+    if not presets:
+        print("No presets saved")
         return
 
-    for item in accounts:
-        rowid = item[0]
-        name = item[1]
-        account_balance = item[2]
-        risk_percentage = item[3]
+    for preset in presets:
+        rowid = preset[0]
+        name = preset[1]
+        account_balance = preset[2]
+        risk_percentage = preset[3]
         print(f"{rowid} || Name: {name} || Balance: {account_balance:,.2f} || Risk Percentage: {risk_percentage}%")
 
-def delete_accounts(rowid):
+def delete_preset(rowid):
     conn = sqlite3.connect('accounts.db')
     c = conn.cursor()
 
@@ -108,6 +108,7 @@ def get_number_input(user_input):
 
 def main():
     initialize_db()
+    display_all_presets()
 
 if __name__ == "__main__":
     main()
