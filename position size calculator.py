@@ -85,6 +85,25 @@ def calculate_lot_size (balance, risk_percent, stop_loss):
         "mini_lots": round(mini_lots, 2)
     }
 
+def calculate_all_presets(stop_loss):
+    presets = get_all_presets()
+
+    if not presets:
+        print("No presets saved, Create one first")
+        return
+
+
+    for p in presets:
+        name = p[1]
+        balance = p[2]
+        risk_percent = p[3]
+
+        result = calculate_lot_size(balance, risk_percent, stop_loss)
+
+        print(f"\nAccount: {name} || Balance: {balance:,.2f} "
+              f"|| Risk amount: ${result['risk_amount']:,.2f} "
+              f"|| Position size: {result['mini_lots']:,.2f} mini lots")
+
 def get_number_input(user_input):
     while True:
         try:
@@ -103,8 +122,16 @@ def main():
         option = show_menu()
 
         if option == "1": # calculate with preset
-            print("work in progress")
-            input("\nPress enter to return to main menu...")
+            while True:
+                stop = get_number_input("\nEnter stop loss (pips):  ")
+                calculate_all_presets(stop)
+
+                try_again = input("\nWould you like to calculate again? (y/n): ").lower()
+                if try_again == "y":
+                    continue
+                else:
+                    input("Press enter to return to main menu...")
+                    break
 
         elif option == "2": # create a new preset
             create_preset(
@@ -135,7 +162,7 @@ def main():
                         input("\nPress enter to return to main menu...")
                         break
                 except ValueError:
-                    print("Invalid preset ID! please enter a number!")
+                    print("Invalid preset ID!")
 
         elif option == "5": # exit program
             print("\nThank you for using position size calculator")
