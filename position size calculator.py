@@ -96,29 +96,6 @@ def get_number_input(user_input):
         except ValueError:
             print("Invalid input! please enter a number!")
 
-# def main():
-#     print('POSITION SIZE CALCULATOR')
-#
-#     while True:
-#         #get user input
-#         account_balance = get_number_input("\nAccount balance($): ")
-#         risk_percent = get_number_input("Risk percent(%): ")
-#         stop_loss = get_number_input("Stop loss(pips): ")
-#
-#         #calculate lots size
-#         result = calculate_lot_size(account_balance, risk_percent, stop_loss)
-#
-#         #display result
-#         print(f"Risk: ${result['risk_amount']}\nMini lot: {result['mini_lots']}")
-#
-#         #ask if user wants to calculate again
-#         repeat = input("\nWant to calculate again? (y/n) ").lower()
-#         if repeat != "y":
-#             break
-#
-# if __name__ == '__main__':
-#     main()
-
 def main():
     initialize_db()
 
@@ -128,29 +105,43 @@ def main():
         if option == "1": # calculate with preset
             print("work in progress")
             input("\nPress enter to return to main menu...")
+
         elif option == "2": # create a new preset
             create_preset(
                 account_name=input("\nEnter account name: "),
-                account_balance=input("Enter account balance: "),
-                risk_percentage=input("Enter risk percentage: "))
+                account_balance=get_number_input("Enter account balance ($): "),
+                risk_percentage=get_number_input("Enter risk percentage (%): "))
             input("\nPress enter to return to main menu...")
+
         elif option == "3": # view all presets
             print(" ")
             display_all_presets()
             input("\nPress enter to return to main menu...")
+
         elif option == "4": # delete a preset
             print(" ")
             display_all_presets()
-            delete_preset(rowid=input("\nSelect a preset ID: "))
-            input("\nPress enter to return to main menu...")
-        elif option == "5":
+            while True:
+                try:
+                    preset_id = int(input("\nEnter preset ID: "))
+
+                    presets = get_all_presets()
+                    valid_id = [p[0] for p in presets]
+
+                    if preset_id not in valid_id:
+                        print("Invalid preset ID!")
+                    else:
+                        delete_preset(preset_id)
+                        input("\nPress enter to return to main menu...")
+                        break
+                except ValueError:
+                    print("Invalid preset ID! please enter a number!")
+
+        elif option == "5": # exit program
             print("\nThank you for using position size calculator")
             break
         else:
             print("\nInvalid input! please enter a number!")
-
-
-
 
 if __name__ == "__main__":
     main()
