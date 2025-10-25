@@ -91,7 +91,6 @@ def calculate_all_presets(stop_loss):
         print("No presets saved, Create one first")
         return
 
-
     for p in presets:
         name = p[1]
         balance = p[2]
@@ -124,7 +123,7 @@ def main():
             result = calculate_lot_size(
                 balance= get_number_input("\nEnter account balance ($): "),
                 risk_percentage=get_number_input("Enter risk percentage (%): "),
-                stop_loss=get_number_input("Enter stop loss ($): ")
+                stop_loss=get_number_input("Enter stop loss (pips): ")
             )
 
             print(f"\nRisk amount: ${result['risk_amount']:,.2f}")
@@ -159,21 +158,27 @@ def main():
         elif option == "5": # delete a preset
             print(" ")
             display_all_presets()
+
+            presets = get_all_presets()
+            if not presets:
+                input("\nPress enter to return to main menu...")
+                continue
+
             while True:
                 try:
                     preset_id = int(input("\nEnter preset ID: "))
 
-                    presets = get_all_presets()
                     valid_id = [p[0] for p in presets]
 
-                    if preset_id not in valid_id:
-                        print("Invalid preset ID!")
-                    else:
+                    if preset_id in valid_id:
                         delete_preset(preset_id)
-                        input("\nPress enter to return to main menu...")
                         break
+                    else:
+                        print("Preset ID not found")
                 except ValueError:
                     print("Invalid preset ID!")
+
+            input("\nPress enter to return to main menu...")
 
         elif option == "6": # exit program
             print("\nThank you for using position size calculator")
