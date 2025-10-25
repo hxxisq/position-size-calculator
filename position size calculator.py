@@ -27,7 +27,7 @@ def create_preset(account_name, account_balance, risk_percentage):
     conn.commit()
     conn.close()
 
-    print(f"{account_name} created successfully")
+    print(f"\n{account_name} created successfully")
 
 def get_all_presets():
     conn = sqlite3.connect('accounts.db')
@@ -40,7 +40,7 @@ def get_all_presets():
     return presets
 
 def display_all_presets():
-    """show all saved accounts"""
+    """show all saved account preset"""
     presets = get_all_presets()
 
     if not presets:
@@ -60,8 +60,21 @@ def delete_preset(rowid):
 
     c.execute("DELETE FROM accounts WHERE rowid = (?)", (rowid,))
 
+    print("Preset deleted successfully")
     conn.commit()
     conn.close()
+
+def show_menu():
+    print("\nPosition size Calculator")
+    print("Please select an option:")
+    print("\n1. Calculate with preset")
+    print("2. Create a new preset")
+    print("3. View all presets")
+    print("4. Delete a preset") # would later be under edit preset
+    print("5. Exit")
+
+    option = input("\nChoose an option: ").lower()
+    return option
 
 def calculate_lot_size (balance, risk_percent, stop_loss):
     risk_amount = balance * (risk_percent/100)
@@ -108,7 +121,36 @@ def get_number_input(user_input):
 
 def main():
     initialize_db()
-    display_all_presets()
+
+    while True:
+        option = show_menu()
+
+        if option == "1": # calculate with preset
+            print("work in progress")
+            input("\nPress enter to return to main menu...")
+        elif option == "2": # create a new preset
+            create_preset(
+                account_name=input("\nEnter account name: "),
+                account_balance=input("Enter account balance: "),
+                risk_percentage=input("Enter risk percentage: "))
+            input("\nPress enter to return to main menu...")
+        elif option == "3": # view all presets
+            print(" ")
+            display_all_presets()
+            input("\nPress enter to return to main menu...")
+        elif option == "4": # delete a preset
+            print(" ")
+            display_all_presets()
+            delete_preset(rowid=input("\nSelect a preset ID: "))
+            input("\nPress enter to return to main menu...")
+        elif option == "5":
+            print("\nThank you for using position size calculator")
+            break
+        else:
+            print("\nInvalid input! please enter a number!")
+
+
+
 
 if __name__ == "__main__":
     main()
