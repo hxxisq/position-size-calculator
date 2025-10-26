@@ -65,12 +65,13 @@ def delete_preset(rowid):
 def show_menu():
     print("===Position size Calculator===".upper())
     print("Please select an option:")
-    print("\n1. Calculate without preset")
+    print("\n1. Calculate without preset (Quick)")
     print("2. Calculate with preset")
     print("3. Create a new preset")
     print("4. View all presets")
-    print("5. Delete a preset") # would later be under edit preset
-    print("6. Exit")
+    print("5. Update a preset")
+    print("6. Delete a preset")
+    print("7. Exit")
 
     option = input("\nChoose an option: ").lower()
     return option
@@ -113,13 +114,45 @@ def get_number_input(user_input):
         except ValueError:
             print("Invalid input! please enter a number!")
 
+def update_preset(rowid, new_name=None, new_balance=None, new_risk=None):
+    conn = sqlite3.connect('accounts.db')
+    c = conn.cursor()
+
+    fields = []
+    values = []
+
+    if new_name is not None:
+        fields.append("account_name = ?")
+        values.append(new_name)
+    if new_balance is not None:
+        fields.append("account_balance = ?")
+        values.append(new_name)
+    if new_risk is not None:
+        fields.append("risk_percentage = ?")
+        values.append(new_name)
+
+    if not fields:
+        print("Nothing to update")
+        conn.close()
+        return
+
+    query = f"UPDATE account SET {', '.join(fields)} WHERE rowid = (?)"
+    values.append(rowid)
+
+    c.execute(query, values)
+
+    conn.commit()
+    conn.close()
+
+    print(f"Preset ID {rowid} updated successfully")
+
 def main():
     initialize_db()
 
     while True:
         option = show_menu()
 
-        if option == "1":
+        if option == "1": # calculate without preset
             result = calculate_lot_size(
                 balance= get_number_input("\nEnter account balance ($): "),
                 risk_percentage=get_number_input("Enter risk percentage (%): "),
@@ -132,6 +165,11 @@ def main():
             input("\nPress enter to return to main menu...")
 
         elif option == "2": # calculate with preset
+            presets = get_all_presets()
+            if not presets:
+                input("\nNo presets Saved\n\nPress Enter to return to the main menu...")
+                continue
+
             while True:
                 stop = get_number_input("\nEnter stop loss (pips):  ")
                 calculate_all_presets(stop)
@@ -155,13 +193,24 @@ def main():
             display_all_presets()
             input("\nPress enter to return to main menu...")
 
-        elif option == "5": # delete a preset
+        elif option == "5": # update a preset
             print(" ")
             display_all_presets()
 
             presets = get_all_presets()
             if not presets:
-                input("\nPress enter to return to main menu...")
+                input("\nPress Enter to return to the main menu...")
+                continue
+
+
+
+        elif option == "6": # delete a preset
+            print(" ")
+            display_all_presets()
+
+            presets = get_all_presets()
+            if not presets:
+                input("\nPress Enter to return to the main menu...")
                 continue
 
             while True:
@@ -180,7 +229,7 @@ def main():
 
             input("\nPress enter to return to main menu...")
 
-        elif option == "6": # exit program
+        elif option == "7": # exit program
             print("\nThank you for using position size calculator")
             break
         else:
