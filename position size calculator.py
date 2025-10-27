@@ -125,6 +125,7 @@ def get_optional_number_input(user_input):
 
             if number <= 0:
                 print("Enter a positive number!")
+                continue
 
             return number
 
