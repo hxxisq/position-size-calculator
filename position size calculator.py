@@ -170,16 +170,22 @@ def main():
         option = show_menu()
 
         if option == "1": # calculate without preset
-            result = calculate_lot_size(
-                balance= get_number_input("\nEnter account balance ($): "),
-                risk_percentage=get_number_input("Enter risk percentage (%): "),
-                stop_loss=get_number_input("Enter stop loss (pips): ")
-            )
+            while True:
+                result = calculate_lot_size(
+                    balance= get_number_input("\nEnter account balance ($): "),
+                    risk_percentage=get_number_input("Enter risk percentage (%): "),
+                    stop_loss=get_number_input("Enter stop loss (pips): ")
+                )
 
-            print(f"\nRisk amount: ${result['risk_amount']:,.2f}")
-            print(f"Position size: {result['mini_lots']:,.2f} mini lots")
+                print(f"\nRisk amount: ${result['risk_amount']:,.2f}")
+                print(f"Position size: {result['mini_lots']:,.2f} mini lots")
 
-            input("\nPress enter to return to main menu...")
+                try_again = input("\nWould you like to calculate again? (y/n): ").lower()
+                if try_again == "y":
+                    continue
+                else:
+                    input("\nPress enter to return to main menu...")
+                    break
 
         elif option == "2": # calculate with preset
             presets = get_all_presets()
