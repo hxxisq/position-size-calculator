@@ -114,6 +114,23 @@ def get_number_input(user_input):
         except ValueError:
             print("Invalid input! please enter a number!")
 
+def get_optional_number_input(user_input):
+    while True:
+        try:
+            value = input(user_input).strip()
+            if not value:
+                return None
+
+            number = float(value)
+
+            if number <= 0:
+                print("Enter a positive number!")
+
+            return number
+
+        except ValueError:
+            print("Invalid input! please enter a number!")
+
 def update_preset(rowid, new_name=None, new_balance=None, new_risk=None):
     conn = sqlite3.connect('accounts.db')
     c = conn.cursor()
@@ -126,17 +143,17 @@ def update_preset(rowid, new_name=None, new_balance=None, new_risk=None):
         values.append(new_name)
     if new_balance is not None:
         fields.append("account_balance = ?")
-        values.append(new_name)
+        values.append(new_balance)
     if new_risk is not None:
         fields.append("risk_percentage = ?")
-        values.append(new_name)
+        values.append(new_risk)
 
     if not fields:
         print("Nothing to update")
         conn.close()
         return
 
-    query = f"UPDATE account SET {', '.join(fields)} WHERE rowid = (?)"
+    query = f"UPDATE accounts SET {', '.join(fields)} WHERE rowid = ?"
     values.append(rowid)
 
     c.execute(query, values)
@@ -144,7 +161,7 @@ def update_preset(rowid, new_name=None, new_balance=None, new_risk=None):
     conn.commit()
     conn.close()
 
-    print(f"Preset ID {rowid} updated successfully")
+    print(f"\nPreset ID {rowid} updated successfully")
 
 def main():
     initialize_db()
@@ -202,7 +219,39 @@ def main():
                 input("\nPress Enter to return to the main menu...")
                 continue
 
+            try:
+                preset_id = int(input("\nEnter preset ID to update: "))
+                valid_id = [p[0] for p in presets]
 
+                if preset_id not in valid_id:
+                    print("Invalid preset ID")
+                    input("Press enter to return to the main menu...")
+                    continue
+
+                # retrieve current preset info
+                current = [p for p in presets if p[0] == preset_id][0]
+
+                print(f"Current Values:")
+                print(f"    Name: {current[1]}")
+                print(f"    Balance: {current[2]:,.2f}")
+                print(f"    Risk: {current[3]}%")
+                print("\n leave blank / skip to keep current value")
+
+                # get new values (or none if skipped)
+                new_name = input("\nEnter new account name (or Enter to skip): ").strip()
+                new_name = new_name if new_name else None
+
+                new_balance = get_optional_number_input("\nEnter account balance (or Enter to skip): ")
+
+                new_risk = get_optional_number_input("\nEnter new risk percentage (or Enter to skip): ")
+
+                update_preset(preset_id, new_name, new_balance, new_risk)
+
+                input("Press enter to return to the main menu...")
+
+            except ValueError:
+                print("Invalid preset ID")
+                input("Press enter to return to the main menu...")
 
         elif option == "6": # delete a preset
             print(" ")
@@ -230,7 +279,7 @@ def main():
             input("\nPress enter to return to main menu...")
 
         elif option == "7": # exit program
-            print("\nThank you for using position size calculator")
+            print("\nThank you for using hxxis's position size calculator")
             break
         else:
             print("\nInvalid input! please enter a number!")
